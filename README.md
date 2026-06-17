@@ -1,8 +1,7 @@
 # Plum.
 
 **金沢大学生のための授業管理ツール**  
-A course management tool for Kanazawa University students.
-I’m unable to use an iPhone for technical reasons, so I’d appreciate your understanding.
+A course management tool for Kanazawa University students.  I’m unable to use an iPhone for technical reasons, so I’d appreciate your understanding.
 ---
 
 ## 概要 / Overview
