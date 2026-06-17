@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+CiAgPHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyByeD0nOCcgZmlsbD0nIzFlM2E2ZScvPgogIDx0ZXh0IHg9JzE2JyB5PScyMycgZm9udC1mYW1pbHk9J0dlb3JnaWEsc2VyaWYnIGZvbnQtc2l6ZT0nMjAnIGZvbnQtd2VpZ2h0PSc0MDAnIGZpbGw9J3doaXRlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LXN0eWxlPSdpdGFsaWMnPlA8L3RleHQ+Cjwvc3ZnPg==">
+  <title>Plum</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0d0d0d;
+      --paper: #ffffff;
+      --surface: #f5f5f7;
+      --surface2: #ebebed;
+      --line: #e0e0e0;
+      --muted: #888;
+      --warn: #e74c3c;
+      --warn-bg: #fdf0ef;
+      --green: #27ae60;
+      --plum: #1e3a6e;
+      --plum-light: #f5f0f8;
+      --sidebar-w: 220px;
+      --header-h: 56px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; font-family: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic UI", "Segoe UI", sans-serif; background: var(--surface); color: var(--ink); line-height: 1.5; }
+
+    /* ===== LAYOUT ===== */
+    #layout { display: flex; height: 100vh; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--paper);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--line); }
+    .sidebar-logo-mark {
+      display: flex; align-items: baseline; gap: 1px;
+    }
+    .sidebar-logo-title {
+      font-size: 2em;
+      font-weight: 300;
+      font-style: italic;
+      letter-spacing: 0.04em;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: var(--plum);
+      line-height: 1;
+    }
+    .sidebar-logo-dot {
+      font-size: 1.8em;
+      font-weight: 300;
+      font-style: italic;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: var(--plum);
+      line-height: 1;
+    }
+    .sidebar-logo-sub { font-size: 0.7em; color: var(--muted); margin-top: 5px; letter-spacing: 0.06em; }
+    .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 20px;
+      font-size: 0.9em; font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border: none; background: none; width: 100%;
+      text-align: left; border-radius: 0;
+      transition: 0.15s;
+      font-family: inherit;
+    }
+    .nav-item:hover { background: var(--plum-light); color: var(--plum); }
+    .nav-item.active { background: var(--plum-light); color: var(--plum); }
+    .nav-item.active::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 22px; background: var(--plum); border-radius: 0 2px 2px 0; }
+    .nav-item { position: relative; }
+    .nav-icon { font-size: 1.1em; width: 22px; text-align: center; }
+    .sidebar-bottom { padding: 16px 20px; border-top: 1px solid var(--line); font-size: 0.75em; color: var(--muted); }
+
+    /* ===== MAIN ===== */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+    .main-header {
+      height: var(--header-h);
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: center;
+      padding: 0 32px;
+      position: sticky; top: 0; z-index: 50;
+      gap: 16px;
+    }
+    .main-header-title { font-size: 1.05em; font-weight: 700; flex: 1; }
+    .main-content { flex: 1; padding: 28px 32px; overflow-y: auto; }
+
+    /* ===== PAGES ===== */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ===== HOME: 2カラム ===== */
+    .home-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+    .home-left { display: flex; flex-direction: column; gap: 16px; }
+    .home-right { display: flex; flex-direction: column; gap: 16px; }
+
+    /* ===== CARDS ===== */
+    .card { background: var(--paper); border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+    .card-header { padding: 14px 18px 10px; font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+
+    /* ===== TODAY ===== */
+    .today-date-row { padding: 12px 18px 4px; display: flex; align-items: center; gap: 10px; }
+    .today-date-text { font-size: 0.85em; color: var(--muted); }
+    .q-badge { background: var(--ink); color: var(--paper); font-size: 0.7em; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .today-item { display: flex; align-items: center; padding: 12px 18px; gap: 14px; border-top: 1px solid var(--line); }
+    .today-item:first-of-type { border-top: none; }
+    .today-item.now-class { background: #fafafa; }
+    .today-period-col { width: 52px; flex-shrink: 0; }
+    .today-period-num { font-size: 1.3em; font-weight: 800; line-height: 1; }
+    .today-period-time { font-size: 0.62em; color: var(--muted); margin-top: 2px; }
+    .today-name-col { flex: 1; }
+    .today-course-name { font-weight: 700; font-size: 0.95em; }
+    .today-attend-row { display: flex; gap: 5px; margin-top: 6px; }
+    .now-pip { display: inline-block; width: 7px; height: 7px; background: var(--warn); border-radius: 50%; margin-right: 4px; vertical-align: middle; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+    .today-webclass-btn { background: var(--ink); color: var(--paper); text-decoration: none; font-size: 0.8em; font-weight: 700; padding: 8px 16px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+    .today-webclass-btn:hover { opacity: 0.8; }
+    .today-empty { padding: 24px 18px; color: var(--muted); font-size: 0.9em; }
+
+    /* ===== ATTEND BADGE ===== */
+    .attend-badge { display: inline-block; font-size: 0.68em; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 5px; background: var(--surface2); color: var(--muted); vertical-align: middle; }
+    .attend-badge.warn { background: var(--warn-bg); color: var(--warn); }
+    .attend-badge.danger { background: var(--warn); color: #fff; }
+    .warn-label { color: var(--warn); font-size: 0.75em; font-weight: 700; margin-left: 4px; }
+    .ab-btn { font-size: 0.72em; padding: 4px 10px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; font-weight: 700; font-family: inherit; }
+    .ab-btn.o { border-color: var(--green); color: var(--green); }
+    .ab-btn.o:hover { background: var(--green); color: #fff; }
+    .ab-btn.x { border-color: var(--warn); color: var(--warn); }
+    .ab-btn.x:hover { background: var(--warn); color: #fff; }
+    .ab-btn.reset { color: var(--muted); font-size: 0.65em; }
+
+    /* ===== HOMEWORK ===== */
+    .hw-item { display: flex; align-items: center; gap: 10px; padding: 11px 18px; border-top: 1px solid var(--line); font-size: 0.88em; }
+    .hw-item:first-child { border-top: none; }
+    .hw-deadline-pill { font-size: 0.7em; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; background: var(--surface2); color: var(--muted); }
+    .hw-deadline-pill.soon { background: var(--warn-bg); color: var(--warn); }
+    .hw-deadline-pill.overdue { background: var(--warn); color: #fff; }
+    .hw-course-pill { font-size: 0.68em; background: var(--surface2); color: var(--muted); padding: 2px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .hw-title-text { flex: 1; font-weight: 600; }
+    .hw-item.done .hw-title-text { text-decoration: line-through; color: var(--muted); font-weight: 400; }
+    .hw-done-btn { font-size: 0.7em; padding: 4px 10px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--paper); color: var(--muted); cursor: pointer; font-weight: 700; white-space: nowrap; font-family: inherit; }
+    .hw-done-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .hw-del-btn { background: none; border: none; color: var(--muted); font-size: 1em; cursor: pointer; padding: 0 4px; font-family: inherit; }
+    .hw-empty { padding: 20px 18px; color: var(--muted); font-size: 0.88em; }
+    .hw-add-section { padding: 12px 18px; border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .hw-add-section input, .hw-add-section select { padding: 7px 10px; border-radius: 8px; border: 1.5px solid var(--line); font-size: 0.85em; font-family: inherit; background: var(--surface); color: var(--ink); flex: 1 1 120px; }
+    .hw-add-section input:focus, .hw-add-section select:focus { outline: none; border-color: var(--ink); }
+    .hw-add-btn { padding: 7px 16px; border-radius: 8px; background: var(--ink); color: var(--paper); border: none; font-weight: 700; font-size: 0.85em; cursor: pointer; font-family: inherit; white-space: nowrap; }
+
+    /* ===== TIMETABLE ===== */
+    .tt-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .q-btn { padding: 6px 18px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--paper); color: var(--muted); font-weight: 700; font-size: 0.85em; cursor: pointer; font-family: inherit; }
+    .q-btn.active { background: var(--plum); color: var(--paper); border-color: var(--plum); }
+    .q-btn:hover { background: var(--plum-light); color: var(--plum); border-color: var(--plum); }
+    .tt-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .tt-table th { background: var(--ink); color: var(--paper); font-size: 0.8em; font-weight: 700; padding: 10px 6px; text-align: center; }
+    .tt-table th.today-col { background: #333; }
+    .tt-table td { border: 1px solid var(--line); vertical-align: top; background: var(--paper); font-size: 0.8em; position: relative; height: 100px; overflow: hidden; }
+    .tt-table td.period-label { background: var(--surface); text-align: center; font-weight: 700; color: var(--muted); font-size: 0.75em; height: auto; padding: 8px 4px; line-height: 1.4; }
+    .tt-table td.today-col { background: #fafafa; }
+    .tt-table td.current-period { outline: 2px solid var(--warn); outline-offset: -2px; }
+    .tt-table td.empty-cell { cursor: pointer; transition: 0.15s; }
+    .tt-table td.empty-cell:hover { background: var(--surface); }
+    .tt-table td.empty-cell:hover::after { content: "+ 登録"; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 0.8em; color: var(--muted); white-space: nowrap; }
+    .tt-cell-inner { padding: 6px 8px; display: flex; flex-direction: column; height: 100%; }
+    .tt-course-name { font-weight: 700; font-size: 0.92em; line-height: 1.3; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .tt-webclass-btn { display: block; background: var(--ink); color: var(--paper); text-align: center; text-decoration: none; font-weight: 700; border-radius: 6px; padding: 5px 0; font-size: 0.78em; margin-top: 5px; }
+    .tt-webclass-btn:hover { opacity: 0.8; }
+    .tt-del-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.08); border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7em; cursor: pointer; display: none; align-items: center; justify-content: center; color: var(--muted); padding: 0; font-family: inherit; }
+    .tt-table td:hover .tt-del-btn { display: flex; }
+
+    /* ===== ATTEND PAGE ===== */
+    .attend-table { width: 100%; border-collapse: collapse; }
+    .attend-table th { background: var(--surface); text-align: left; padding: 10px 16px; font-size: 0.78em; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); }
+    .attend-table td { padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 0.88em; vertical-align: middle; }
+    .attend-table tr:last-child td { border-bottom: none; }
+    .attend-table tr.warn-item td { background: var(--warn-bg); }
+    .attend-btns-cell { display: flex; gap: 5px; }
+
+    /* ===== TIER ===== */
+    .tier-controls { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; width: fit-content; margin-bottom: 16px; }
+    .tier-tab { padding: 7px 18px; background: var(--paper); border: none; font-size: 0.82em; font-weight: 600; color: var(--muted); cursor: pointer; font-family: inherit; }
+    .tier-tab.active { background: var(--ink); color: var(--paper); }
+    .tier-row-card { display: flex; margin-bottom: 4px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+    .tier-label-box { width: 56px; display: flex; align-items: center; justify-content: center; font-size: 1.2em; font-weight: 800; color: var(--paper); flex-shrink: 0; min-height: 52px; }
+    .tier-content-box { flex: 1; background: var(--paper); padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .tier-s { background: #000; } .tier-a { background: #2b2b2b; } .tier-b { background: #5c5c5c; } .tier-c { background: #8d8d8d; } .tier-d { background: #bfbfbf; color: var(--ink); }
+    .tier-chip { background: var(--surface); border-radius: 20px; padding: 5px 12px; font-size: 0.82em; display: inline-flex; align-items: center; gap: 6px; }
+    .tier-chip a { color: var(--ink); text-decoration: none; font-weight: 600; }
+
+    /* ===== SETTINGS ===== */
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .section-title { font-size: 0.72em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { font-size: 0.78em; font-weight: 600; color: var(--muted); display: block; margin-bottom: 5px; letter-spacing: 0.04em; }
+    .form-input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--line); font-size: 0.9em; font-family: inherit; background: var(--surface); color: var(--ink); }
+    .form-input:focus { outline: none; border-color: var(--ink); background: var(--paper); }
+    .form-row { display: flex; gap: 8px; }
+    .form-select { flex: 1; padding: 9px 10px; border-radius: 8px; border: 1.5px solid var(--line); font-size: 0.88em; font-family: inherit; background: var(--surface); color: var(--ink); }
+    .form-select:focus { outline: none; border-color: var(--ink); }
+    .form-submit { width: 100%; padding: 11px; border-radius: 10px; background: var(--plum); color: var(--paper); border: none; font-weight: 700; font-size: 0.92em; cursor: pointer; font-family: inherit; margin-top: 6px; }
+    .form-submit:hover { opacity: 0.85; }
+    .settings-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .settings-toggle { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
+    .settings-toggle input { opacity: 0; width: 0; height: 0; }
+    .settings-toggle-slider { position: absolute; inset: 0; background: var(--surface2); border-radius: 13px; transition: 0.2s; cursor: pointer; }
+    .settings-toggle-slider:before { content: ""; position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .settings-toggle input:checked + .settings-toggle-slider { background: var(--ink); }
+    .settings-toggle input:checked + .settings-toggle-slider:before { transform: translateX(18px); }
+    .data-btn { padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85em; cursor: pointer; font-family: inherit; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); }
+    .data-btn:hover { background: var(--surface); }
+    .data-btn.danger { border-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
+
+    /* ===== ヘルプ ===== */
+    .help-text { font-size: 0.75em; color: var(--muted); margin: 4px 0 14px; line-height: 1.55; }
+    .help-badge { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; background: var(--surface2); color: var(--muted); font-size: 0.65em; font-weight: 700; cursor: pointer; margin-left: 4px; vertical-align: middle; border: 1px solid var(--line); }
+    .help-badge:hover { background: var(--ink); color: var(--paper); }
+    .help-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+    .help-modal { background: var(--paper); border-radius: 16px; padding: 28px 32px; width: 100%; max-width: 440px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+    .help-modal-title { font-size: 1.05em; font-weight: 800; margin-bottom: 14px; }
+    .help-modal-body { font-size: 0.88em; color: var(--ink); line-height: 1.7; }
+    .help-modal-body p { margin: 0 0 10px; }
+    .help-modal-close { padding: 10px 20px; border-radius: 8px; background: var(--surface); border: none; font-weight: 700; font-size: 0.88em; cursor: pointer; margin-top: 16px; font-family: inherit; color: var(--ink); }
+    .onboarding-banner { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; font-size: 0.88em; line-height: 1.6; }
+    .onboarding-banner-title { font-weight: 800; font-size: 1em; margin-bottom: 6px; }
+    .onboarding-steps { list-style: none; padding: 0; margin: 0 0 10px; }
+    .onboarding-steps li { display: flex; gap: 8px; padding: 3px 0; align-items: flex-start; }
+    .onboarding-step-num { background: rgba(255,255,255,0.2); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.72em; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .onboarding-dismiss { background: rgba(255,255,255,0.15); border: none; color: var(--paper); font-size: 0.78em; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-family: inherit; font-weight: 600; }
+
+    .hidden { display: none !important; }
+    .q-selector-row { display: flex; gap: 8px; margin-bottom: 16px; }
+
+    /* ===== 成績・GPA ===== */
+    .grades-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    .gpa-display { text-align: center; padding: 16px 0 20px; }
+    .gpa-number { font-size: 3.5em; font-weight: 800; color: var(--plum); line-height: 1; font-family: 'Cormorant Garamond', serif; }
+    .gpa-label { font-size: 0.8em; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; }
+    .gpa-stats { display: flex; justify-content: center; gap: 24px; margin: 12px 0 16px; flex-wrap: wrap; }
+    .gpa-stat { text-align: center; }
+    .gpa-stat-num { font-size: 1.3em; font-weight: 700; color: var(--ink); }
+    .gpa-stat-label { font-size: 0.72em; color: var(--muted); margin-top: 2px; }
+    .grade-bar-wrap { padding: 0 4px; }
+    .grade-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.8em; }
+    .grade-bar-label { width: 20px; font-weight: 700; color: var(--ink); flex-shrink: 0; }
+    .grade-bar-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+    .grade-bar-fill { height: 100%; border-radius: 4px; background: var(--plum); transition: width 0.4s ease; }
+    .grade-bar-count { width: 24px; text-align: right; color: var(--muted); flex-shrink: 0; }
+    .grade-chip { display: inline-block; font-size: 0.78em; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .grade-S { background: var(--plum); color: #fff; }
+    .grade-A { background: #e8e0f0; color: var(--plum); }
+    .grade-B { background: var(--surface2); color: var(--ink); }
+    .grade-C { background: #fff3cd; color: #856404; }
+    .grade-D { background: var(--warn-bg); color: var(--warn); }
+  </style>
+</head>
+<body>
+<div id="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <div class="sidebar-logo-title">Plum</div>
+        <div class="sidebar-logo-dot">.</div>
+      </div>
+      <div class="sidebar-logo-sub">金沢大学 授業管理</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="switchPage('home',this)">ホーム</button>
+      <button class="nav-item" onclick="switchPage('timetable',this)">時間割</button>
+      <button class="nav-item" onclick="switchPage('attend',this)">出席管理</button>
+      <button class="nav-item" onclick="switchPage('grades',this)">成績 / GPA</button>
+      <button class="nav-item tier-element" onclick="switchPage('tier',this)">Tier</button>
+      <button class="nav-item" onclick="switchPage('settings',this)">設定 / 登録</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <a href="https://acanthus.cis.kanazawa-u.ac.jp/" target="_blank" style="color:var(--muted);text-decoration:none;font-weight:600;">アカンサスポータル →</a>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <div class="main">
+    <header class="main-header">
+      <div class="main-header-title" id="mainTitle">ホーム</div>
+      <span id="headerDateBadge" style="font-size:0.82em; color:var(--muted);"></span>
+    </header>
+
+    <div class="main-content">
+
+      <!-- ホーム -->
+      <div class="page active" id="page-home">
+        <div class="onboarding-banner" id="onboardingBanner">
+          <div class="onboarding-banner-title">Plumへようこそ</div>
+          <ul class="onboarding-steps">
+            <li><span class="onboarding-step-num">1</span>「設定 / 登録」タブから授業を登録する</li>
+            <li><span class="onboarding-step-num">2</span>WebClass の URL を貼り付けると直接開けるようになる</li>
+            <li><span class="onboarding-step-num">3</span>出席ボタンで欠席を記録、2回で警告が出る</li>
+          </ul>
+          <button class="onboarding-dismiss" onclick="dismissOnboarding()">わかった、閉じる</button>
+        </div>
+        <div class="home-grid">
+          <div class="home-left">
+            <!-- Today -->
+            <div class="card">
+              <div class="card-header">
+                <span>本日の授業</span>
+                <span><span id="todayDateLabel" style="color:var(--muted); font-weight:400; font-size:1em;"></span> <span class="q-badge hidden" id="todayQBadge"></span></span>
+              </div>
+              <div id="todayContent"><div class="today-empty">読み込み中...</div></div>
+            </div>
+          </div>
+
+          <div class="home-right">
+            <!-- 宿題 -->
+            <div class="card">
+              <div class="card-header">宿題 / 課題</div>
+              <ul id="hwList" style="list-style:none;padding:0;margin:0;"></ul>
+              <div class="hw-add-section">
+                <input type="text" id="hwTitle" placeholder="課題名">
+                <select id="hwCourse"><option value="">授業を選択</option></select>
+                <input type="date" id="hwDeadline" style="flex:0 0 140px;">
+                <button class="hw-add-btn" onclick="addHomework()">追加</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時間割 -->
+      <div class="page" id="page-timetable">
+        <div class="tt-controls">
+          <div class="q-selector-row" id="qSelector"></div>
+        </div>
+        <div id="ttViewArea"></div>
+      </div>
+
+      <!-- 出席管理 -->
+      <div class="page" id="page-attend">
+        <div class="q-selector-row" id="attendQSelector"></div>
+        <div class="card">
+          <table class="attend-table">
+            <thead><tr><th>授業名</th><th>曜日・時限</th><th>出席記録</th><th>操作</th></tr></thead>
+            <tbody id="attendContent"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 成績 / GPA -->
+      <div class="page" id="page-grades">
+        <!-- ロック画面 -->
+        <div id="gradesLockScreen" style="display:none; align-items:center; justify-content:center; min-height:60vh;">
+          <div class="card" style="padding:40px; max-width:360px; width:100%; text-align:center;">
+            <div style="font-size:2em; margin-bottom:12px;">🔒</div>
+            <div style="font-weight:700; font-size:1.05em; margin-bottom:4px;">成績 / GPA</div>
+            <div style="font-size:0.82em; color:var(--muted); margin-bottom:24px;">パスワードで保護されています</div>
+            <input type="password" id="gradesPasswordInput" class="form-input"
+              placeholder="パスワードを入力"
+              style="text-align:center; letter-spacing:0.2em; margin-bottom:10px;"
+              onkeydown="if(event.key==='Enter')unlockGrades()">
+            <button class="form-submit" onclick="unlockGrades()">ロック解除</button>
+            <div id="gradesLockError" style="color:var(--warn); font-size:0.8em; margin-top:10px; display:none;">パスワードが違います</div>
+          </div>
+        </div>
+
+        <!-- 成績コンテンツ -->
+        <div id="gradesContent" style="display:none;">
+        <div class="grades-grid">
+          <!-- GPA サマリー -->
+          <div>
+            <p class="section-title">GPA サマリー</p>
+            <div class="card" style="padding:24px;">
+              <div class="gpa-display">
+                <div class="gpa-number" id="gpaNumber">—</div>
+                <div class="gpa-label">GPA / 4.0</div>
+              </div>
+              <div class="gpa-stats" id="gpaStats"></div>
+              <div class="grade-bar-wrap" id="gradeBar"></div>
+            </div>
+
+            <p class="section-title" style="margin-top:20px;">成績を登録</p>
+            <div class="card" style="padding:20px;">
+              <div class="form-group">
+                <label class="form-label">授業名</label>
+                <input type="text" class="form-input" id="gradeCourseName" placeholder="例）計算物理学a">
+              </div>
+              <div class="form-row" style="margin-bottom:14px;">
+                <div style="flex:1;">
+                  <label class="form-label">単位数</label>
+                  <select class="form-select" id="gradeCredits" style="width:100%;">
+                    <option value="1">1単位</option>
+                    <option value="2" selected>2単位</option>
+                    <option value="3">3単位</option>
+                    <option value="4">4単位</option>
+                  </select>
+                </div>
+                <div style="flex:1;">
+                  <label class="form-label">成績</label>
+                  <select class="form-select" id="gradeScore" style="width:100%;">
+                    <option value="S">S（90〜100点）</option>
+                    <option value="A">A（80〜89点）</option>
+                    <option value="B" selected>B（70〜79点）</option>
+                    <option value="C">C（60〜69点）</option>
+                    <option value="D">D（不合格）</option>
+                  </select>
+                </div>
+                <div style="flex:1;">
+                  <label class="form-label">クォーター</label>
+                  <select class="form-select" id="gradeQuarter" style="width:100%;">
+                    <option value="Q1">Q1</option>
+                    <option value="Q2">Q2</option>
+                    <option value="Q3">Q3</option>
+                    <option value="Q4">Q4</option>
+                  </select>
+                </div>
+              </div>
+              <button class="form-submit" onclick="addGrade()">登録する</button>
+            </div>
+          </div>
+
+          <!-- 成績一覧 -->
+          <div>
+            <p class="section-title">成績一覧</p>
+            <div class="card">
+              <div style="display:flex; justify-content:flex-end; padding:10px 16px 0;">
+                <button onclick="lockGrades()" style="background:none;border:none;color:var(--muted);font-size:0.78em;cursor:pointer;font-family:inherit;font-weight:600;">ロックする</button>
+              </div>
+              <table class="attend-table" id="gradesTable">
+                <thead><tr><th>授業名</th><th>Q</th><th>単位</th><th>成績</th><th>GP</th><th></th></tr></thead>
+                <tbody id="gradesBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div><!-- end grades-grid -->
+        </div><!-- end gradesContent -->
+      </div>
+
+      <!-- Tier -->
+      <div class="page" id="page-tier">
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px; flex-wrap:wrap;">
+          <div class="tier-controls">
+            <button class="tier-tab active" onclick="switchTier('prof',this)">教授</button>
+            <button class="tier-tab" onclick="switchTier('content',this)">内容</button>
+            <button class="tier-tab" onclick="switchTier('sleep',this)">睡魔</button>
+          </div>
+          <div class="q-selector-row" id="tierQSelector"></div>
+        </div>
+        <div id="tierContent"></div>
+      </div>
+
+      <!-- 設定 -->
+      <div class="page" id="page-settings">
+        <div class="settings-grid">
+          <!-- 授業登録フォーム -->
+          <div>
+            <p class="section-title">授業を登録</p>
+            <div class="card" style="padding:20px;">
+              <div class="form-group">
+                <label class="form-label">クォーター <span class="help-badge" onclick="showHelp('quarter')">?</span></label>
+                <select class="form-select" id="targetQuarter" style="width:100%;" title="授業が開講されているクォーターを選択">
+                  <option value="Q1">Q1</option><option value="Q2">Q2</option><option value="Q3">Q3</option><option value="Q4">Q4</option>
+                </select>
+                <p class="help-text">Q1=4〜6月、Q2=6〜8月、Q3=10〜12月、Q4=12〜2月</p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">曜日・時限 <span class="help-badge" onclick="showHelp('quarter')">?</span></label>
+                <div class="form-row">
+                  <select class="form-select" id="courseDay" title="授業の曜日"><option value="mon">月</option><option value="tue">火</option><option value="wed">水</option><option value="thu">木</option><option value="fri">金</option><option value="sat">土</option></select>
+                  <select class="form-select" id="coursePeriodStart" title="開始時限"><option value="1">1限</option><option value="2">2限</option><option value="3">3限</option><option value="4">4限</option><option value="5">5限</option><option value="6">6限</option></select>
+                  <span style="align-self:center;color:var(--muted);">〜</span>
+                  <select class="form-select" id="coursePeriodEnd" title="終了時限（1コマなら開始と同じでOK）"><option value="1">1限</option><option value="2">2限</option><option value="3">3限</option><option value="4">4限</option><option value="5">5限</option><option value="6">6限</option></select>
+                </div>
+                <p class="help-text">複数コマ連続の場合は〜で範囲指定すると一括登録できる</p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">授業名</label>
+                <input type="text" class="form-input" id="courseName" placeholder="例）計算物理学a" title="授業名を入力">
+              </div>
+              <div class="form-group">
+                <label class="form-label">WebClass URL <span class="help-badge" onclick="showHelp('url')">?</span></label>
+                <input type="text" class="form-input" id="courseUrl" placeholder="https://..." title="WebClassの授業ページURLを貼り付ける">
+                <p class="help-text">WebClassにログイン → 授業名をクリック → そのページのURLをコピーして貼り付ける</p>
+              </div>
+              <div class="form-group tier-element">
+                <label class="form-label">評価 <span class="help-badge" onclick="showHelp('tier')">?</span></label>
+                <div class="form-row">
+                  <select class="form-select" id="evalProf" title="教授の教え方の評価"><option value="S">教授S</option><option value="A">教授A</option><option value="B" selected>教授B</option><option value="C">教授C</option><option value="D">教授D</option></select>
+                  <select class="form-select" id="evalContent" title="授業内容の面白さ"><option value="S">内容S</option><option value="A">内容A</option><option value="B" selected>内容B</option><option value="C">内容C</option><option value="D">内容D</option></select>
+                  <select class="form-select" id="evalSleep" title="眠くなりやすさ（S=最も眠い）"><option value="S">睡魔S</option><option value="A">睡魔A</option><option value="B" selected>睡魔B</option><option value="C">睡魔C</option><option value="D">睡魔D</option></select>
+                </div>
+                <p class="help-text tier-element">Tierページで授業をランク別に表示できる（任意）</p>
+              </div>
+              <button class="form-submit" onclick="addCourse()">登録する</button>
+            </div>
+          </div>
+
+          <!-- 設定・データ管理 -->
+          <div>
+            <p class="section-title">成績のパスワード</p>
+            <div class="card" style="padding:16px 20px; margin-bottom:20px;">
+              <div style="font-size:0.82em; color:var(--muted); margin-bottom:10px;" id="pwStatusLabel">未設定（パスワードなし）</div>
+              <div style="display:flex; gap:8px; margin-bottom:10px;">
+                <input type="password" id="newPasswordInput" class="form-input" placeholder="新しいパスワード" style="margin-bottom:0; flex:1;">
+                <button onclick="setGradesPassword()" class="data-btn" style="background:var(--plum);color:#fff;border-color:var(--plum);white-space:nowrap;">設定</button>
+              </div>
+              <button onclick="removeGradesPassword()" style="background:none;border:none;color:var(--warn);font-size:0.8em;cursor:pointer;font-family:inherit;font-weight:600;padding:0;">パスワードを削除する</button>
+            </div>
+
+            <p class="section-title">表示設定</p>
+            <div class="card" style="padding:16px 20px; margin-bottom:20px;">
+              <div class="settings-toggle-row">
+                <span style="font-size:0.9em; font-weight:600;">TierMaker機能</span>
+                <label class="settings-toggle">
+                  <input type="checkbox" id="useTierCheckbox" onchange="toggleTierFeatures()" checked>
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <p class="section-title">データ管理</p>
+            <div class="card" style="padding:16px 20px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center;">
+                <input type="text" id="csvFileName" placeholder="ファイル名" style="flex:1 1 100px; padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); font-size:0.85em; font-family:inherit; background:var(--surface);">
+                <button class="data-btn" onclick="exportCSV()">CSV保存</button>
+                <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="importCSV(this)">
+                <button class="data-btn" onclick="document.getElementById('csvFileInput').click()">CSV読込</button>
+              </div>
+              <button class="data-btn danger" onclick="clearData()" style="width:100%;">全データを削除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  let allCourses={Q1:[],Q2:[],Q3:[],Q4:[]};
+  let attendance={};
+  let homeworks=[];
+  let currentTtQ='Q1';
+  let currentAttendQ='Q1';
+  let currentTierQ='Q1';
+  let currentTierType='prof';
+
+  const days=['mon','tue','wed','thu','fri','sat'];
+  const dayLabels={mon:'月',tue:'火',wed:'水',thu:'木',fri:'金',sat:'土'};
+  const quarters=['Q1','Q2','Q3','Q4'];
+  const tierRanks=['S','A','B','C','D'];
+  const periodTimes={1:['08:45','10:15'],2:['10:30','12:00'],3:['13:00','14:30'],4:['14:45','16:15'],5:['16:30','18:00'],6:['18:15','19:45']};
+
+  function getTodayDayKey(){const m={1:'mon',2:'tue',3:'wed',4:'thu',5:'fri',6:'sat',0:null};return m[new Date().getDay()];}
+  function getCurrentQuarter(){const n=new Date(),md=(n.getMonth()+1)*100+n.getDate();if(md>=406&&md<=610)return'Q1';if(md>=611&&md<=801)return'Q2';if(md>=1001&&md<=1208)return'Q3';if(md>=1209||md<=220)return'Q4';return null;}
+  function getCurrentPeriod(){const n=new Date(),m=n.getHours()*60+n.getMinutes();for(const p in periodTimes){const[s,e]=periodTimes[p],[sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number);if(m>=sh*60+sm&&m<=eh*60+em)return String(p);}return null;}
+  function aKey(q,day,period){return q+'_'+day+'_'+period;}
+
+  let grades=[];
+  let gradesUnlocked=false;
+  const gradePoints={S:4.0,A:3.0,B:2.0,C:1.0,D:0.0};
+
+  function hashPassword(pw){let h=0;for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;}return String(h);}
+  function setGradesPassword(){
+    const pw=document.getElementById('newPasswordInput').value.trim();
+    if(!pw)return alert('パスワードを入力してください');
+    localStorage.setItem('plum_grade_pw',hashPassword(pw));
+    document.getElementById('newPasswordInput').value='';
+    updatePwStatus();alert('パスワードを設定しました');
+  }
+  function removeGradesPassword(){
+    if(!confirm('パスワードを削除しますか？'))return;
+    localStorage.removeItem('plum_grade_pw');
+    gradesUnlocked=false;updatePwStatus();alert('パスワードを削除しました');
+  }
+  function updatePwStatus(){
+    const el=document.getElementById('pwStatusLabel');if(!el)return;
+    const has=!!localStorage.getItem('plum_grade_pw');
+    el.textContent=has?'設定済み':'未設定（パスワードなし）';
+    el.style.color=has?'var(--plum)':'var(--muted)';
+  }
+  function unlockGrades(){
+    const pw=document.getElementById('gradesPasswordInput').value;
+    const stored=localStorage.getItem('plum_grade_pw');
+    if(hashPassword(pw)===stored){
+      gradesUnlocked=true;
+      document.getElementById('gradesLockScreen').style.display='none';
+      document.getElementById('gradesContent').style.display='block';
+      document.getElementById('gradesPasswordInput').value='';
+      document.getElementById('gradesLockError').style.display='none';
+      renderGrades();
+    }else{
+      document.getElementById('gradesLockError').style.display='block';
+      document.getElementById('gradesPasswordInput').value='';
+    }
+  }
+  function skipGradesLock(){
+    gradesUnlocked=true;
+    document.getElementById('gradesLockScreen').style.display='none';
+    document.getElementById('gradesContent').style.display='block';
+    renderGrades();
+  }
+  function lockGrades(){
+    gradesUnlocked=false;
+    document.getElementById('gradesLockScreen').style.display='flex';
+    document.getElementById('gradesContent').style.display='none';
+  }
+
+  function switchPage(name,btn){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const titles={home:'ホーム',timetable:'時間割',attend:'出席管理',grades:'成績 / GPA',tier:'Tier',settings:'設定 / 登録'};
+    document.getElementById('mainTitle').textContent=titles[name];
+    if(name==='timetable')renderTimetablePage();
+    if(name==='attend')renderAttendPage();
+    if(name==='grades'){
+      const hasPw=!!localStorage.getItem('plum_grade_pw');
+      if(hasPw&&!gradesUnlocked){
+        document.getElementById('gradesLockScreen').style.display='flex';
+        document.getElementById('gradesContent').style.display='none';
+      }else{
+        document.getElementById('gradesLockScreen').style.display='none';
+        document.getElementById('gradesContent').style.display='block';
+        renderGrades();
+      }
+    }    if(name==='tier')renderTierSection();
+  }
+
+  function getAttendBadge(q,day,period){
+    const a=attendance[aKey(q,day,period)];
+    if(!a||a.total===0)return'';
+    const cls=a.absent>=3?'danger':a.absent>=2?'warn':'';
+    return`<span class="attend-badge ${cls}">${a.absent}欠/${a.total}回</span>`;
+  }
+  function markAttend(q,day,period,type){
+    const k=aKey(q,day,period);
+    if(!attendance[k])attendance[k]={total:0,absent:0};
+    attendance[k].total++;
+    if(type==='absent')attendance[k].absent++;
+    const abs=attendance[k].absent,name=getCourseName(q,day,period);
+    if(abs===2)alert('警告: '+name+' の欠席が2回になりました。あと1回で危険です。');
+    if(abs===3)alert('危険: '+name+' の欠席が3回！出席不足に注意してください。');
+    saveData();renderTodayPanel();renderTimetablePage();renderAttendPage();
+  }
+  function resetAttend(q,day,period){delete attendance[aKey(q,day,period)];saveData();renderTodayPanel();renderTimetablePage();renderAttendPage();}
+  function getCourseName(q,day,period){const c=(allCourses[q]||[]).find(c=>c.day===day&&c.period===String(period));return c?c.name:'授業';}
+  function attendBtnsHtml(q,day,period){return`<button class="ab-btn o" onclick="markAttend('${q}','${day}','${period}','attend')">出席</button><button class="ab-btn x" onclick="markAttend('${q}','${day}','${period}','absent')">欠席</button><button class="ab-btn reset" onclick="resetAttend('${q}','${day}','${period}')">リセット</button>`;}
+
+  function renderTodayPanel(){
+    const container=document.getElementById('todayContent');
+    const todayKey=getTodayDayKey();
+    const dateLabel=document.getElementById('todayDateLabel');
+    const qBadge=document.getElementById('todayQBadge');
+    const now=new Date();
+    const dj=['日','月','火','水','木','金','土'];
+    dateLabel.textContent=`${now.getMonth()+1}月${now.getDate()}日（${dj[now.getDay()]}）`;
+    document.getElementById('headerDateBadge').textContent=`${now.getMonth()+1}/${now.getDate()}（${dj[now.getDay()]}）`;
+    const q=getCurrentQuarter();
+    if(q){qBadge.textContent=q;qBadge.classList.remove('hidden');}else{qBadge.classList.add('hidden');}
+    if(!todayKey){container.innerHTML='<div class="today-empty">本日は休日です</div>';return;}
+    if(!q){container.innerHTML='<div class="today-empty">現在は長期休暇期間です</div>';return;}
+    const items=(allCourses[q]||[]).filter(c=>c.day===todayKey).sort((a,b)=>parseInt(a.period)-parseInt(b.period));
+    if(items.length===0){container.innerHTML=`<div class="today-empty">${q} の本日の授業はありません</div>`;return;}
+    const nowP=getCurrentPeriod();
+    container.innerHTML=items.map(c=>{
+      const time=periodTimes[c.period];
+      const timeStr=time?time[0]+'–'+time[1]:'';
+      const isNow=String(c.period)===nowP;
+      const badge=getAttendBadge(q,c.day,c.period);
+      const a=attendance[aKey(q,c.day,c.period)]||{total:0,absent:0};
+      const warnLabel=a.absent>=2?`<span class="warn-label">${a.absent}回欠席</span>`:'';
+      return`<div class="today-item ${isNow?'now-class':''}">
+        <div class="today-period-col">
+          ${isNow?'<span class="now-pip"></span>':''}
+          <div class="today-period-num">${c.period}限</div>
+          <div class="today-period-time">${timeStr}</div>
+        </div>
+        <div class="today-name-col">
+          <div class="today-course-name">${c.name}${badge}${warnLabel}</div>
+          <div class="today-attend-row">${attendBtnsHtml(q,c.day,c.period)}</div>
+        </div>
+        <a href="${c.url}" class="today-webclass-btn" target="_blank">WebClass</a>
+      </div>`;
+    }).join('');
+  }
+
+  function addHomework(){
+    const title=document.getElementById('hwTitle').value.trim();
+    const course=document.getElementById('hwCourse').value;
+    const deadline=document.getElementById('hwDeadline').value;
+    if(!title||!deadline)return alert('課題名と期限を入力してください');
+    homeworks.push({id:Date.now(),title,course,deadline,done:false});
+    saveData();renderHomeworks();
+    document.getElementById('hwTitle').value='';
+    document.getElementById('hwDeadline').value='';
+  }
+  function toggleHwDone(id){const h=homeworks.find(h=>h.id===id);if(h)h.done=!h.done;saveData();renderHomeworks();}
+  function deleteHw(id){homeworks=homeworks.filter(h=>h.id!==id);saveData();renderHomeworks();}
+  function renderHomeworks(){
+    const ul=document.getElementById('hwList');
+    const today=new Date();today.setHours(0,0,0,0);
+    const sorted=[...homeworks].sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;return new Date(a.deadline)-new Date(b.deadline);});
+    if(sorted.length===0){ul.innerHTML='<li class="hw-item"><span class="hw-empty">課題はありません</span></li>';return;}
+    ul.innerHTML=sorted.map(hw=>{
+      const dl=new Date(hw.deadline);dl.setHours(0,0,0,0);
+      const diff=Math.round((dl-today)/86400000);
+      let dlLabel='',dlCls='';
+      if(hw.done)dlLabel=hw.deadline.replace(/-/g,'/');
+      else if(diff<0){dlLabel=Math.abs(diff)+'日超過';dlCls='overdue';}
+      else if(diff===0){dlLabel='今日期限';dlCls='soon';}
+      else if(diff<=3){dlLabel='あと'+diff+'日';dlCls='soon';}
+      else dlLabel='あと'+diff+'日';
+      return`<li class="hw-item ${hw.done?'done':''}">
+        <span class="hw-deadline-pill ${dlCls}">${dlLabel}</span>
+        ${hw.course?`<span class="hw-course-pill">${hw.course}</span>`:''}
+        <span class="hw-title-text">${hw.title}</span>
+        <button class="hw-done-btn" onclick="toggleHwDone(${hw.id})">${hw.done?'戻す':'完了'}</button>
+        <button class="hw-del-btn" onclick="deleteHw(${hw.id})">×</button>
+      </li>`;
+    }).join('');
+  }
+  function refreshHwCourseSelect(){
+    const q=getCurrentQuarter();
+    const sel=document.getElementById('hwCourse'),prev=sel.value;
+    const names=new Set();
+    if(q)(allCourses[q]||[]).forEach(c=>names.add(c.name));
+    sel.innerHTML='<option value="">授業を選択</option>'+[...names].sort().map(n=>`<option value="${n}"${n===prev?' selected':''}>${n}</option>`).join('');
+  }
+
+  function buildQSelector(id,current,fn){
+    document.getElementById(id).innerHTML=quarters.map(q=>`<button class="q-btn ${q===current?'active':''}" onclick="${fn}('${q}')">${q}</button>`).join('');
+  }
+  function switchTtQ(q){currentTtQ=q;renderTimetablePage();}
+  function renderTimetablePage(){
+    buildQSelector('qSelector',currentTtQ,'switchTtQ');
+    const todayKey=getTodayDayKey(),nowP=getCurrentPeriod();
+    const courses=allCourses[currentTtQ]||[];
+    let html='<div style="overflow-x:auto;"><table class="tt-table"><thead><tr>';
+    html+=`<th style="width:52px;">限</th>`;
+    days.forEach(d=>html+=`<th class="${d===todayKey?'today-col':''}">${dayLabels[d]}</th>`);
+    html+='</tr></thead><tbody>';
+    for(let p=1;p<=6;p++){
+      const time=periodTimes[p];
+      html+=`<tr><td class="period-label">${p}限<br><span style="font-size:0.82em;">${time[0]}</span></td>`;
+      days.forEach(d=>{
+        const c=courses.find(c=>c.day===d&&c.period===String(p));
+        let cls='';
+        if(d===todayKey)cls+=' today-col';
+        if(d===todayKey&&String(p)===nowP)cls+=' current-period';
+        if(c){
+          const badge=getAttendBadge(currentTtQ,d,p);
+          html+=`<td class="${cls}"><button class="tt-del-btn" onclick="deleteCourse('${currentTtQ}','${d}','${p}')">×</button><div class="tt-cell-inner"><div class="tt-course-name">${c.name}${badge}</div><a href="${c.url}" class="tt-webclass-btn" target="_blank">WebClass</a></div></td>`;
+        }else{
+          html+=`<td class="${cls} empty-cell" onclick="prefillForm('${currentTtQ}','${d}','${p}')"></td>`;
+        }
+      });
+      html+='</tr>';
+    }
+    html+='</tbody></table></div>';
+    document.getElementById('ttViewArea').innerHTML=html;
+  }
+
+  function switchAttendQ(q){currentAttendQ=q;renderAttendPage();}
+  function renderAttendPage(){
+    buildQSelector('attendQSelector',currentAttendQ,'switchAttendQ');
+    const courses=[...(allCourses[currentAttendQ]||[])].sort((a,b)=>a.day!==b.day?days.indexOf(a.day)-days.indexOf(b.day):parseInt(a.period)-parseInt(b.period));
+    const tbody=document.getElementById('attendContent');
+    if(courses.length===0){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">登録なし</td></tr>';return;}
+    tbody.innerHTML=courses.map(c=>{
+      const a=attendance[aKey(currentAttendQ,c.day,c.period)]||{total:0,absent:0};
+      const cls=a.absent>=3?'danger':a.absent>=2?'warn':'';
+      const badge=`<span class="attend-badge ${cls}">${a.absent}欠/${a.total}回</span>`;
+      const warnLabel=a.absent>=2?`<span class="warn-label">欠席${a.absent}回</span>`:'';
+      return`<tr class="${a.absent>=2?'warn-item':''}">
+        <td><strong>${c.name}</strong>${badge}${warnLabel}</td>
+        <td>${dayLabels[c.day]}曜 ${c.period}限</td>
+        <td>${a.total}回中 ${a.total-a.absent}回出席</td>
+        <td><div class="attend-btns-cell">${attendBtnsHtml(currentAttendQ,c.day,c.period)}</div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function switchTier(type,btn){
+    currentTierType=type;
+    document.querySelectorAll('.tier-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTierSection();
+  }
+  function switchTierQ(q){currentTierQ=q;renderTierSection();}
+  function renderTierSection(){
+    buildQSelector('tierQSelector',currentTierQ,'switchTierQ');
+    const courses=allCourses[currentTierQ]||[];
+    const keyMap={prof:'prof',content:'content',sleep:'sleep'};
+    document.getElementById('tierContent').innerHTML=tierRanks.map(r=>{
+      const items=courses.filter(c=>(c[keyMap[currentTierType]]||'B')===r);
+      return`<div class="tier-row-card"><div class="tier-label-box tier-${r.toLowerCase()}">${r}</div><div class="tier-content-box">${items.map(c=>`<div class="tier-chip"><a href="${c.url}" target="_blank">${c.name}</a><span style="color:var(--muted);cursor:pointer;margin-left:4px;" onclick="deleteCourse('${currentTierQ}','${c.day}','${c.period}')">×</span></div>`).join('')}</div></div>`;
+    }).join('');
+  }
+
+  function prefillForm(q,day,period){
+    document.getElementById('targetQuarter').value=q;
+    document.getElementById('courseDay').value=day;
+    document.getElementById('coursePeriodStart').value=String(period);
+    document.getElementById('coursePeriodEnd').value=String(period);
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.nav-item:last-child').classList.add('active');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-settings').classList.add('active');
+    document.getElementById('mainTitle').textContent='設定 / 登録';
+    document.getElementById('courseName').focus();
+  }
+  function addCourse(){
+    const q=document.getElementById('targetQuarter').value;
+    const name=document.getElementById('courseName').value.trim();
+    const url=document.getElementById('courseUrl').value.trim();
+    const day=document.getElementById('courseDay').value;
+    const startP=parseInt(document.getElementById('coursePeriodStart').value);
+    let endP=parseInt(document.getElementById('coursePeriodEnd').value);
+    const prof=document.getElementById('evalProf').value,content=document.getElementById('evalContent').value,sleep=document.getElementById('evalSleep').value;
+    if(!name||!url)return alert('入力漏れがあります。');
+    if(startP>endP)endP=startP;
+    for(let p=startP;p<=endP;p++){allCourses[q]=allCourses[q].filter(i=>!(i.day===day&&parseInt(i.period)===p));allCourses[q].push({name,url,day,period:String(p),prof,content,sleep});}
+    saveData();renderTodayPanel();renderTimetablePage();refreshHwCourseSelect();
+    document.getElementById('courseName').value='';document.getElementById('courseUrl').value='';
+    alert('登録しました');
+  }
+  function deleteCourse(q,day,period){
+    if(confirm('この授業を削除しますか？')){
+      allCourses[q]=allCourses[q].filter(i=>!(i.day===day&&i.period===String(period)));
+      delete attendance[aKey(q,day,period)];
+      saveData();renderTodayPanel();renderTimetablePage();renderAttendPage();refreshHwCourseSelect();
+      if(document.getElementById('useTierCheckbox').checked)renderTierSection();
+    }
+  }
+  function toggleTierFeatures(){
+    const ok=document.getElementById('useTierCheckbox').checked;
+    localStorage.setItem('plum_use_tier',ok);
+    document.querySelectorAll('.tier-element').forEach(el=>el.classList.toggle('hidden',!ok));
+  }
+  function addGrade(){
+    const name=document.getElementById('gradeCourseName').value.trim();
+    const credits=parseInt(document.getElementById('gradeCredits').value);
+    const score=document.getElementById('gradeScore').value;
+    const quarter=document.getElementById('gradeQuarter').value;
+    if(!name)return alert('授業名を入力してください');
+    grades.push({id:Date.now(),name,credits,score,quarter});
+    saveData();renderGrades();
+    document.getElementById('gradeCourseName').value='';
+  }
+
+  function deleteGrade(id){
+    grades=grades.filter(g=>g.id!==id);
+    saveData();renderGrades();
+  }
+
+  function renderGrades(){
+    const tbody=document.getElementById('gradesBody');
+    if(grades.length===0){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);">成績が登録されていません</td></tr>';
+      document.getElementById('gpaNumber').textContent='—';
+      document.getElementById('gpaStats').innerHTML='';
+      document.getElementById('gradeBar').innerHTML='';
+      return;
+    }
+    // 一覧
+    tbody.innerHTML=[...grades].sort((a,b)=>a.quarter!==b.quarter?a.quarter.localeCompare(b.quarter):a.name.localeCompare(b.name))
+      .map(g=>`<tr>
+        <td><strong>${g.name}</strong></td>
+        <td>${g.quarter}</td>
+        <td>${g.credits}単位</td>
+        <td><span class="grade-chip grade-${g.score}">${g.score}</span></td>
+        <td style="font-weight:700;color:var(--plum);">${gradePoints[g.score].toFixed(1)}</td>
+        <td><button class="data-btn" style="padding:4px 10px;font-size:0.75em;" onclick="deleteGrade(${g.id})">削除</button></td>
+      </tr>`).join('');
+    // GPA計算
+    const passed=grades.filter(g=>g.score!=='D');
+    const totalCredits=passed.reduce((s,g)=>s+g.credits,0);
+    const allCredits=grades.reduce((s,g)=>s+g.credits,0);
+    const weightedSum=grades.reduce((s,g)=>s+gradePoints[g.score]*g.credits,0);
+    const gpa=allCredits>0?(weightedSum/allCredits):0;
+    document.getElementById('gpaNumber').textContent=gpa.toFixed(2);
+    // stats
+    document.getElementById('gpaStats').innerHTML=`
+      <div class="gpa-stat"><div class="gpa-stat-num">${totalCredits}</div><div class="gpa-stat-label">取得単位</div></div>
+      <div class="gpa-stat"><div class="gpa-stat-num">${grades.length}</div><div class="gpa-stat-label">履修科目数</div></div>
+      <div class="gpa-stat"><div class="gpa-stat-num">${grades.filter(g=>g.score==='S').length}</div><div class="gpa-stat-label">S評価</div></div>
+      <div class="gpa-stat"><div class="gpa-stat-num" style="color:var(--warn);">${grades.filter(g=>g.score==='D').length}</div><div class="gpa-stat-label">不合格</div></div>
+    `;
+    // 棒グラフ
+    const counts={S:0,A:0,B:0,C:0,D:0};
+    grades.forEach(g=>counts[g.score]++);
+    const max=Math.max(...Object.values(counts),1);
+    document.getElementById('gradeBar').innerHTML=Object.entries(counts).map(([g,n])=>`
+      <div class="grade-bar-row">
+        <div class="grade-bar-label">${g}</div>
+        <div class="grade-bar-track"><div class="grade-bar-fill" style="width:${(n/max)*100}%"></div></div>
+        <div class="grade-bar-count">${n}</div>
+      </div>`).join('');
+  }
+
+  function saveData(){
+    localStorage.setItem('plum_courses',JSON.stringify(allCourses));
+    localStorage.setItem('plum_attendance',JSON.stringify(attendance));
+    localStorage.setItem('plum_homeworks',JSON.stringify(homeworks));
+    localStorage.setItem('plum_grades',JSON.stringify(grades));
+  }
+  function loadData(){
+    const s=localStorage.getItem('plum_courses')||localStorage.getItem('minamitsu_v7_shortcuts');if(s)allCourses=JSON.parse(s);
+    const sa=localStorage.getItem('plum_attendance')||localStorage.getItem('minamitsu_attendance');if(sa)attendance=JSON.parse(sa);
+    const sh=localStorage.getItem('plum_homeworks')||localStorage.getItem('minamitsu_homeworks');if(sh)homeworks=JSON.parse(sh);
+    const sg=localStorage.getItem('plum_grades');if(sg)grades=JSON.parse(sg);
+  }
+  function exportCSV(){
+    let hasData=false;quarters.forEach(q=>{if((allCourses[q]||[]).length>0)hasData=true;});
+    if(!hasData)return alert('データがありません。');
+    const fn=(document.getElementById('csvFileName').value.trim()||'ibara')+'.csv';
+    const rows=[];quarters.forEach(q=>(allCourses[q]||[]).forEach(c=>rows.push(`"${q}","${c.name}","${c.url}","${c.day}","${c.period}","${c.prof||'B'}","${c.content||'B'}","${c.sleep||'B'}"`)));
+    const blob=new Blob([new Uint8Array([0xEF,0xBB,0xBF]),'クォーター,授業名,URL,曜日,時限,教授評価,授業内容,睡魔レベル\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;a.click();
+  }
+  function importCSV(input){
+    if(!input.files.length)return;
+    const reader=new FileReader();
+    reader.onload=function(e){
+      allCourses={Q1:[],Q2:[],Q3:[],Q4:[]};
+      e.target.result.split('\n').slice(1).forEach(line=>{if(!line.trim())return;const[q,name,url,day,period,prof,content,sleep]=line.split(',').map(s=>s.replace(/"/g,'').trim());if(quarters.includes(q)&&name&&url)allCourses[q].push({name,url,day,period,prof:prof||'B',content:content||'B',sleep:sleep||'B'});});
+      saveData();renderTodayPanel();renderTimetablePage();refreshHwCourseSelect();alert('読み込みました');
+    };reader.readAsText(input.files[0],'UTF-8');
+  }
+  function clearData(){if(confirm('全データを消去します。本当によいですか？')){['plum_courses','plum_attendance','plum_homeworks','plum_grades','plum_use_tier','plum_onboarded','minamitsu_v7_shortcuts','minamitsu_attendance','minamitsu_homeworks'].forEach(k=>localStorage.removeItem(k));location.reload();}}
+
+  window.onload=function(){
+    const tc=localStorage.getItem('plum_use_tier');
+    if(tc!==null)document.getElementById('useTierCheckbox').checked=(tc==='true');
+    loadData();toggleTierFeatures();
+    renderTodayPanel();renderHomeworks();refreshHwCourseSelect();
+    updatePwStatus();
+    if(localStorage.getItem('plum_onboarded')==='true'){
+      const b=document.getElementById('onboardingBanner');if(b)b.style.display='none';
+    }
+    const q=getCurrentQuarter()||'Q1';
+    currentTtQ=q;currentAttendQ=q;currentTierQ=q;
+    document.addEventListener('keydown',e=>{
+      if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+      if(e.key==='ArrowLeft')switchTtQ(quarters[Math.max(0,quarters.indexOf(currentTtQ)-1)]);
+      if(e.key==='ArrowRight')switchTtQ(quarters[Math.min(3,quarters.indexOf(currentTtQ)+1)]);
+    });
+  };
+
+  function dismissOnboarding(){
+    document.getElementById('onboardingBanner').style.display='none';
+    localStorage.setItem('plum_onboarded','true');
+  }
+
+  const helpContent={
+    quarter:{title:'クォーター・曜日・時限とは',body:`<p>金沢大学は年間4つのクォーター（Q）に分かれています。</p><p><strong>Q1</strong>: 4月〜6月上旬<br><strong>Q2</strong>: 6月中旬〜8月<br><strong>Q3</strong>: 10月〜12月上旬<br><strong>Q4</strong>: 12月中旬〜2月</p><p>複数コマ連続の授業（例: 3・4限）は「〜」で範囲指定すると一括登録できます。</p>`},
+    url:{title:'WebClass URL の取得方法',body:`<p>WebClass（授業支援システム）の授業ページURLを登録すると、Plumから直接その授業のページに飛べます。</p><p><strong>手順:</strong></p><p>1. アカンサスポータルにログイン<br>2. WebClass を開く<br>3. 登録したい授業名をクリック<br>4. そのページのURLをコピーして貼り付ける</p>`},
+    attend:{title:'出席管理について',body:`<p>授業を受けるたびに「出席」または「欠席」ボタンをクリックして記録します。</p><p><strong>欠席2回</strong>: 警告が表示されます<br><strong>欠席3回</strong>: 危険の警告が表示されます</p><p>「リセット」で記録をすべて消せます。</p>`},
+    tier:{title:'Tier機能について',body:`<p>授業を教授・内容・睡魔レベルでS〜Dランクに分類して表示できます。</p><p>授業登録時に評価を入力しておくと、Tierページで確認できます。</p>`}
+  };
+  function showHelp(key){
+    const c=helpContent[key];if(!c)return;
+    const overlay=document.createElement('div');
+    overlay.className='help-modal-overlay';
+    overlay.innerHTML=`<div class="help-modal"><div class="help-modal-title">${c.title}</div><div class="help-modal-body">${c.body}</div><button class="help-modal-close" onclick="this.closest('.help-modal-overlay').remove()">閉じる</button></div>`;
+    overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+    document.body.appendChild(overlay);
+  }
+</script>
+</body>
+</html>
