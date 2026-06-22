@@ -71,6 +71,133 @@ Plum is a course management web app for Kanazawa University students, themed aro
 - フォント: [Playfair Display](https://fonts.google.com/specimen/Playfair+Display) / [Cormorant Garamond](https://fonts.google.com/specimen/Cormorant+Garamond) (Google Fonts)
 - ブランドカラー: 金沢大学スクールカラー「茄子紺」をモチーフに / Inspired by Kanazawa University's school color "Nasu-kon"
 
+---# Plum.
+
+**金沢大学生のための授業管理ツール**
+A course management tool for Kanazawa University students.
+
+> 金沢大学スクールカラー「茄子紺」をブランドカラーとした、金大生向けWebアプリ。
+> インストール不要。HTMLファイルをブラウザで開くだけで動く。
+
 ---
+
+## ファイル構成 / Files
+
+| ファイル | 説明 |
+|---------|------|
+| `index.html` | スマホ版（配布用） |
+| `pc.html` | PC版（配布用） |
+| `plum_ai.html` | スマホ版・AI相談機能付き（自分専用） |
+| `plum_ai_pc.html` | PC版・AI相談機能付き（自分専用） |
+
+AI版は [claude.ai](https://claude.ai) 環境でのみ動作します。
+
+---
+
+## 機能一覧 / Features
+
+### 基本機能
+| 機能 | 説明 |
+|------|------|
+| 時間割 | Q1〜Q4のクォーター別時間割。今日の列・現在時限をハイライト |
+| Today パネル | 学年暦に基づいてQを自動判定し、本日の授業を一覧表示 |
+| 出席管理 | 授業ごとに出席・欠席を記録。2回欠席で警告、3回で危険アラート |
+| 宿題・課題管理 | 期限付きで課題を登録。期限が近づくと赤くハイライト |
+| テストカウントダウン | テスト日程を登録し「あと○日」を表示 |
+| 成績・GPA計算 | S/A/B/C/D形式で成績を登録し、GPA・取得単位数を自動計算 |
+| GPA推移グラフ | クォーター別のGPA推移を折れ線グラフで可視化 |
+| Tier機能 | 教授・授業内容・睡魔レベルでS〜Dランク表示 |
+| CSV保存・読込 | データのエクスポート・インポートに対応 |
+
+### UI・体験
+| 機能 | 説明 |
+|------|------|
+| ダークモード | 茄子紺ベースのダークテーマに切替可能 |
+| スプラッシュ画面 | 起動時のブランドアニメーション |
+| 週間カレンダー | ホームに一週間分の授業をコンパクト表示 |
+| 次の授業カウントダウン | 今日の次の授業まで「あと○分」 |
+| ダッシュボード | 出席率リング・GPA・取得単位・連続出席を一画面に |
+| 称号システム | 出席・成績・課題達成で称号アンロック（全9種） |
+| オンボーディング | 初回起動時のウェルカム案内 |
+
+### セキュリティ
+| 機能 | 説明 |
+|------|------|
+| 成績パスワードロック | 成績・GPAページをパスワードで保護 |
+| GPA表示切替 | ホームのGPA表示をON/OFF（デフォルトOFF） |
+
+### PWA・通知
+| 機能 | 説明 |
+|------|------|
+| PWA対応 | ホーム画面に追加してアプリとして使用可能 |
+| オフライン動作 | Service Workerによるキャッシュでオフラインでも動く |
+| 課題リマインダー通知 | 期限2日前の課題を1日1回ブラウザ通知 |
+
+### AI機能（自分専用版のみ）
+| 機能 | 説明 |
+|------|------|
+| Plum AI チャット | 時間割・課題・出席・GPA・テストを把握した上でAIが相談に応答 |
+| スマート空きコマ | 授業の合間の空きコマを自動検出し活用方法を提案 |
+| AIクイック質問 | 「今日やるべきこと」「課題の優先順位」などワンタップで相談 |
+
+---
+
+## Q（クォーター）判定基準
+
+金沢大学 令和8(2026)年度学年暦に基づく自動判定。
+
+| クォーター | 期間 |
+|-----------|------|
+| Q1 | 4/6 〜 6/10 |
+| Q2 | 6/11 〜 8/1 |
+| Q3 | 10/1 〜 12/8 |
+| Q4 | 12/9 〜 2/20 |
+
+---
+
+## 称号一覧 / Achievements
+
+| 称号 | 解除条件 |
+|------|---------|
+| 皆勤 | 全授業の出席率100% |
+| 10連続出席 | 欠席なしの授業記録が10回以上 |
+| 授業マスター | 10科目以上登録 |
+| S評価ハンター | S評価を3つ以上取得 |
+| GPA帝王 | GPA 3.5以上 |
+| 課題完遂 | 課題を5件以上完了 |
+| テスト戦士 | テストを3件以上登録 |
+| 夜型 | ダークモードをオンにする |
+| 通知マスター | 課題リマインダー通知をオンにする |
+
+---
+
+## データについて / About Data
+
+- すべてのデータはブラウザの `localStorage` に保存
+- 外部サーバーへの送信は一切なし
+- AI版のチャット内容もサーバーには保存されない
+- ブラウザのデータを消去するとデータが失われます。定期的にCSVでバックアップを
+
+All data is stored locally in `localStorage`. No data is sent to any external server.
+
+---
+
+## 動作環境 / Requirements
+
+- モダンブラウザ（Chrome / Safari / Firefox / Brave）
+- インターネット接続（Google Fonts の読み込みに必要）
+- AI機能は claude.ai 環境でのみ動作
+
+---
+
+## クレジット / Credits
+
+- フォント: [Playfair Display](https://fonts.google.com/specimen/Playfair+Display) / [Cormorant Garamond](https://fonts.google.com/specimen/Cormorant+Garamond) (Google Fonts)
+- ブランドカラー: 金沢大学スクールカラー「茄子紺」をモチーフに
+
+---
+
+*Plum. — Made for KU students*
+
 
 *Plum. — Made for KU students*
