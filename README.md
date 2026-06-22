@@ -1,4 +1,4 @@
-# Plum.
+# Plum. made by nuenuemainden
 
 **金沢大学生のための授業管理ツール**  
 A course management tool for Kanazawa University students.
@@ -40,7 +40,7 @@ Plum is a course management web app for Kanazawa University students, themed aro
 ## 使い方 / How to Use
 
 ### PC / Desktop
-1. `pc.html` をブラウザで開く
+1. `Plum_ver○○.html` をブラウザで開く
 2. 左サイドバーの「設定 / 登録」から授業を登録する
 
 ---
@@ -88,8 +88,6 @@ A course management tool for Kanazawa University students.
 | `Plum_ver4.4.html` | PC版 |
 | `plum_ver6.0.html` | PC版改良版 |
 
-AI版は [claude.ai](https://claude.ai) 環境でのみ動作します。
-
 ---
 
 ## 機能一覧 / Features
@@ -129,7 +127,7 @@ AI版は [claude.ai](https://claude.ai) 環境でのみ動作します。
 |------|------|
 | PWA対応 | ホーム画面に追加してアプリとして使用可能 |
 | オフライン動作 | Service Workerによるキャッシュでオフラインでも動く |
-| 課題リマインダー通知 | 期限2日前の課題を1日1回ブラウザ通知 |
+| 課題リマインダー通知 | 期限2日前の課題を1日1回ブラウザ通知(利用不可) |
 
 ---
 
@@ -158,7 +156,7 @@ AI版は [claude.ai](https://claude.ai) 環境でのみ動作します。
 | 課題完遂 | 課題を5件以上完了 |
 | テスト戦士 | テストを3件以上登録 |
 | 夜型 | ダークモードをオンにする |
-| 通知マスター | 課題リマインダー通知をオンにする |
+| 通知マスター | 課題リマインダー通知をオンにする(利用不可) |
 
 ---
 
@@ -166,7 +164,6 @@ AI版は [claude.ai](https://claude.ai) 環境でのみ動作します。
 
 - すべてのデータはブラウザの `localStorage` に保存
 - 外部サーバーへの送信は一切なし
-- AI版のチャット内容もサーバーには保存されない
 - ブラウザのデータを消去するとデータが失われます。定期的にCSVでバックアップを
 
 All data is stored locally in `localStorage`. No data is sent to any external server.
@@ -177,7 +174,6 @@ All data is stored locally in `localStorage`. No data is sent to any external se
 
 - モダンブラウザ（Chrome / Safari / Firefox / Brave）
 - インターネット接続（Google Fonts の読み込みに必要）
-- AI機能は claude.ai 環境でのみ動作
 
 ---
 
