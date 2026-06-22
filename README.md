@@ -85,10 +85,8 @@ A course management tool for Kanazawa University students.
 
 | ファイル | 説明 |
 |---------|------|
-| `index.html` | スマホ版（配布用） |
-| `pc.html` | PC版（配布用） |
-| `plum_ai.html` | スマホ版・AI相談機能付き（自分専用） |
-| `plum_ai_pc.html` | PC版・AI相談機能付き（自分専用） |
+| `Plum_ver4.4.html` | PC版 |
+| `plum_ver6.0.html` | PC版改良版 |
 
 AI版は [claude.ai](https://claude.ai) 環境でのみ動作します。
 
@@ -132,13 +130,6 @@ AI版は [claude.ai](https://claude.ai) 環境でのみ動作します。
 | PWA対応 | ホーム画面に追加してアプリとして使用可能 |
 | オフライン動作 | Service Workerによるキャッシュでオフラインでも動く |
 | 課題リマインダー通知 | 期限2日前の課題を1日1回ブラウザ通知 |
-
-### AI機能（自分専用版のみ）
-| 機能 | 説明 |
-|------|------|
-| Plum AI チャット | 時間割・課題・出席・GPA・テストを把握した上でAIが相談に応答 |
-| スマート空きコマ | 授業の合間の空きコマを自動検出し活用方法を提案 |
-| AIクイック質問 | 「今日やるべきこと」「課題の優先順位」などワンタップで相談 |
 
 ---
 
