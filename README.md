@@ -185,6 +185,3 @@ All data is stored locally in `localStorage`. No data is sent to any external se
 ---
 
 *Plum. — Made for KU students*
-
-
-*Plum. — Made for KU students*
